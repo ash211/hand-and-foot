@@ -70,16 +70,16 @@ class TeamScorer(object):
         self.addWilds()
 
     def addSevens(self):
-        sevenCanasta = [ynBooleans.get(v) for v in [raw_input('Had a 7 canasta? (Y/N): ')]][0]
-        if sevenCanasta:
-            self.score += 7 * cardValues.get('7') + 1500
+        sevenCanastaCount = int(raw_input('How many 7 canastas did you have? '))
+        if sevenCanastaCount:
+            self.score += sevenCanastaCount * (7 * cardValues.get('7') + 1500)
             print('New score: %d' % self.score)
 
     def addWilds(self):
-        wildCanasta = [ynBooleans.get(v) for v in [raw_input('Had a wild canasta? (Y/N): ')]][0]
-        if wildCanasta:
-            jokerCount = int(raw_input('How many of those wilds were jokers? '))
-            self.score += jokerCount * cardValues.get('$') + (7 - jokerCount) * cardValues.get('2') + 1500
+        wildCanastaCount = int(raw_input('How many wild canastas did you have? '))
+        if wildCanastaCount:
+            jokerCount = int(raw_input('How many of those %d wild canastas were jokers? ' % wildCanastaCount))
+            self.score += jokerCount * cardValues.get('$') + (wildCanastaCount * 7 - jokerCount) * cardValues.get('2') + 1500 * wildCanastaCount
             print('New score: %d' % self.score)
 
     def addGoOutBonus(self):
@@ -87,13 +87,10 @@ class TeamScorer(object):
         if wentOut:
             # bonus
             self.score += 250
-            # seven canasta
-            self.score += 7 * cardValues.get('7') + 1500
-            print('New score: %d' % self.score)
+            # seven canastas
+            self.addSevens()
             # wilds
-            jokerCount = int(raw_input('How many of your wilds were jokers? '))
-            self.score += jokerCount * cardValues.get('$') + (7 - jokerCount) * cardValues.get('2') + 1500
-            print('New score: %d' % self.score)
+            self.addWilds()
         else:
             count = int(raw_input('How many cards in your hand (count against you)? '))
             self.score -= count
@@ -104,7 +101,6 @@ class TeamScorer(object):
         score = int(raw_input('How many points on the board that are in partial canastas? '))
         self.score += score
         print('New score: %d' % self.score)
-
 
     def run(self):
         self.score = 0
