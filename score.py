@@ -20,7 +20,7 @@ cardValues = {
     }
 
 ynBooleans = {
-	'Y': True,
+    'Y': True,
     'y': True,
     'N': False,
     'n': False
@@ -39,7 +39,7 @@ class TeamScorer(object):
         while value != 'X' and value != '':
             if isValidCardValue(value):
                 print(value)
-            	self.addCleanCanasta(value)
+                self.addCleanCanasta(value)
                 print('New score: %d' % self.score)
             else:
                 print("Invalid card: $points not in $cardValues")
@@ -63,6 +63,7 @@ class TeamScorer(object):
     def addRedThrees(self):
         count = int(raw_input('How many red threes? '))
         self.score += count * 100
+        print('New score: %d' % self.score)
 
     def addSpecials(self):
         self.addSevens()
@@ -117,4 +118,4 @@ class TeamScorer(object):
         print('Final score: %d' % self.score)
 
 if __name__ == '__main__':
-	TeamScorer().run()
+    TeamScorer().run()
