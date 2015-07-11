@@ -31,46 +31,50 @@ class KeyboardInputSource(UserInputSource):
     def getInt(self, prompt):
         return int(raw_input(prompt))
 
+class TeamHandState(dict):
+    def __init__(self):
+        self['wentOut'] = False
+        self['handPenalty'] = 0
+        self['sevenCanastaCount'] = 0
+        self['wildCanastaCount'] = 0
+        self['wildCanastaJokerCount'] = 0
+        self['cleansValues'] = []
+        self['dirtiesValues'] = []
+        self['dirtiesWilds'] = []
+        self['redThreesCount'] = 0
+        self['partialCanastasPoints'] = 0
+
 class TeamHandScorer(object):
 
     def __init__(self, inputSource):
         self.inputSource = inputSource
-        self.wentOut = False
-        self.handPenalty = 0
-        self.sevenCanastaCount = 0
-        self.wildCanastaCount = 0
-        self.wildCanastaJokerCount = 0
-        self.cleansValues = []
-        self.dirtiesValues = []
-        self.dirtiesWilds = []
-        self.redThreesCount = 0
-        self.partialCanastasPoints = 0
+        self.state = TeamHandState()
 
     def addCleans(self):
-        self.cleansValues.append(self.inputSource.getString('Enter face value of cleans (X to end): '))
-        while self.cleansValues[-1] != 'X' and self.cleansValues[-1] != '':
-            if isValidCardValue(self.cleansValues[-1]):
+        self.state['cleansValues'].append(self.inputSource.getString('Enter face value of cleans (X to end): '))
+        while self.state['cleansValues'][-1] != 'X' and self.state['cleansValues'][-1] != '':
+            if isValidCardValue(self.state['cleansValues'][-1]):
                 print('New score: %d' % self.calcScore())
             else:
                 print("Invalid card: $points not in $CARD_VALUES")
-                self.cleansValues.pop()
-            self.cleansValues.append(self.inputSource.getString('Enter face value of cleans (X to end): '))
-        self.cleansValues.pop()
+                self.state['cleansValues'].pop()
+            self.state['cleansValues'].append(self.inputSource.getString('Enter face value of cleans (X to end): '))
+        self.state['cleansValues'].pop()
 
     def addDirties(self):
-        self.dirtiesValues.append(self.inputSource.getString('Enter face value of dirties (X to end): '))
-        while self.dirtiesValues[-1] != 'X' and self.dirtiesValues[-1] != '':
-            if isValidCardValue(self.dirtiesValues[-1]):
-                self.dirtiesWilds.append(self.inputSource.getString('What wilds? ($ or 2 separated by spaces): ').strip().split(' '))
+        self.state['dirtiesValues'].append(self.inputSource.getString('Enter face value of dirties (X to end): '))
+        while self.state['dirtiesValues'][-1] != 'X' and self.state['dirtiesValues'][-1] != '':
+            if isValidCardValue(self.state['dirtiesValues'][-1]):
+                self.state['dirtiesWilds'].append(self.inputSource.getString('What wilds? ($ or 2 separated by spaces): ').strip().split(' '))
                 print('New score: %d' % self.calcScore())
             else:
                 print("Invalid card: $points not in $CARD_VALUES")
-                self.dirtiesValues.pop()
-            self.dirtiesValues.append(self.inputSource.getString('Enter face value of dirties (X to end): '))
-        self.dirtiesValues.pop()
+                self.state['dirtiesValues'].pop()
+            self.state['dirtiesValues'].append(self.inputSource.getString('Enter face value of dirties (X to end): '))
+        self.state['dirtiesValues'].pop()
 
     def addRedThrees(self):
-        self.redThreesCount = self.inputSource.getInt('How many red threes? ')
+        self.state['redThreesCount'] = self.inputSource.getInt('How many red threes? ')
         print('New score: %d' % self.calcScore())
 
     def addSpecials(self):
@@ -78,57 +82,57 @@ class TeamHandScorer(object):
         self.addWilds()
 
     def addSevens(self):
-        self.sevenCanastaCount = self.inputSource.getInt('How many 7 canastas did you have? ')
-        if self.sevenCanastaCount:
+        self.state['sevenCanastaCount'] = self.inputSource.getInt('How many 7 canastas did you have? ')
+        if self.state['sevenCanastaCount']:
             print('New score: %d' % self.calcScore())
 
     def addWilds(self):
-        self.wildCanastaCount = self.inputSource.getInt('How many wild canastas did you have? ')
-        if self.wildCanastaCount:
-            self.wildCanastaJokerCount = self.inputSource.getInt('How many of those %d wild canastas were jokers? ' % self.wildCanastaCount)
+        self.state['wildCanastaCount'] = self.inputSource.getInt('How many wild canastas did you have? ')
+        if self.state['wildCanastaCount']:
+            self.state['wildCanastaJokerCount'] = self.inputSource.getInt('How many of those %d wild canastas were jokers? ' % self.state['wildCanastaCount'])
             print('New score: %d' % self.calcScore())
 
     def addGoOutBonus(self):
-        self.wentOut = self.inputSource.getBoolean('Went out? (Y/N): ')
-        if not self.wentOut:
-            self.handPenalty = self.inputSource.getInt('How many cards in your hand (count against you)? ')
+        self.state['wentOut'] = self.inputSource.getBoolean('Went out? (Y/N): ')
+        if not self.state['wentOut']:
+            self.state['handPenalty'] = self.inputSource.getInt('How many cards in your hand (count against you)? ')
             print('New score: %d' % self.calcScore())
 
     def addPartialCanastas(self):
-        self.partialCanastasPoints = self.inputSource.getInt('How many points on the board that are in partial canastas? ')
+        self.state['partialCanastasPoints'] = self.inputSource.getInt('How many points on the board that are in partial canastas? ')
         print('New score: %d' % self.calcScore())
 
     def calcScore(self):
         score = 0
 
-        if self.wentOut:
+        if self.state['wentOut']:
             score += 250
         else:
-            score -= self.handPenalty
+            score -= self.state['handPenalty']
 
         # seven canastas
-        score += self.sevenCanastaCount * (7 * CARD_VALUES.get('7') + 1500)
+        score += self.state['sevenCanastaCount'] * (7 * CARD_VALUES.get('7') + 1500)
 
         # wild canastas
-        score += 1500 * self.wildCanastaCount
-        score += self.wildCanastaJokerCount * CARD_VALUES.get('$')
-        score += (self.wildCanastaCount * 7 - self.wildCanastaJokerCount) * CARD_VALUES.get('2')
+        score += 1500 * self.state['wildCanastaCount']
+        score += self.state['wildCanastaJokerCount'] * CARD_VALUES.get('$')
+        score += (self.state['wildCanastaCount'] * 7 - self.state['wildCanastaJokerCount']) * CARD_VALUES.get('2')
 
         # clean canastas
-        for cleansValue in self.cleansValues:
+        for cleansValue in self.state['cleansValues']:
             score += 7 * CARD_VALUES[cleansValue] + 500
 
         # dirty canastas
-        for (dirtyValue, dirtyWilds) in zip(self.dirtiesValues, self.dirtiesWilds):
+        for (dirtyValue, dirtyWilds) in zip(self.state['dirtiesValues'], self.state['dirtiesWilds']):
             wildFacePoints = sum([CARD_VALUES.get(x) for x in dirtyWilds])
             score += 300
             score += wildFacePoints + (7-len(dirtyWilds)) * CARD_VALUES[dirtyValue]
 
         # red threes
-        score += self.redThreesCount * 100
+        score += self.state['redThreesCount'] * 100
 
         # partial canastas
-        score += self.partialCanastasPoints
+        score += self.state['partialCanastasPoints']
 
         return score
 
@@ -141,16 +145,7 @@ class TeamHandScorer(object):
         self.addPartialCanastas()
 
     def printState(self):
-        print "wentOut: %s" % self.wentOut
-        print "handPenalty: %d" % self.handPenalty
-        print "sevenCanastaCount: %s" % self.sevenCanastaCount
-        print "wildCanastaCount: %s" % self.wildCanastaCount
-        print "wildCanastaJokerCount: %s" % self.wildCanastaJokerCount
-        print "cleansValues: %s" % self.cleansValues
-        print "dirtiesValues: %s" % self.dirtiesValues
-        print "dirtiesWilds: %s" % self.dirtiesWilds
-        print "redThreesCount: %s" % self.redThreesCount
-        print "partialCanastasPoints: %s" % self.partialCanastasPoints
+        print self.state
 
 if __name__ == '__main__':
     scorer = TeamHandScorer(KeyboardInputSource())
