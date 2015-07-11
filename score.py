@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-validCardValues = set(['A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', '$'])
-
 CARD_VALUES = {
     'A': 20,
     '2': 20,
@@ -20,7 +18,7 @@ CARD_VALUES = {
     }
 
 def isValidCardValue(value):
-    return value in validCardValues
+    return value in CARD_VALUES
 
 class UserInputSource(object):
     pass
