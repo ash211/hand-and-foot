@@ -2,7 +2,7 @@
 
 validCardValues = set(['A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', '$'])
 
-cardValues = {
+CARD_VALUES = {
     'A': 20,
     '2': 20,
     '3': 5,
@@ -54,7 +54,7 @@ class TeamHandScorer(object):
             if isValidCardValue(self.cleansValues[-1]):
                 print('New score: %d' % self.calcScore())
             else:
-                print("Invalid card: $points not in $cardValues")
+                print("Invalid card: $points not in $CARD_VALUES")
                 self.cleansValues.pop()
             self.cleansValues.append(self.inputSource.getString('Enter face value of cleans (X to end): '))
         self.cleansValues.pop()
@@ -66,7 +66,7 @@ class TeamHandScorer(object):
                 self.dirtiesWilds.append(self.inputSource.getString('What wilds? ($ or 2 separated by spaces): ').strip().split(' '))
                 print('New score: %d' % self.calcScore())
             else:
-                print("Invalid card: $points not in $cardValues")
+                print("Invalid card: $points not in $CARD_VALUES")
                 self.dirtiesValues.pop()
             self.dirtiesValues.append(self.inputSource.getString('Enter face value of dirties (X to end): '))
         self.dirtiesValues.pop()
@@ -109,22 +109,22 @@ class TeamHandScorer(object):
             score -= self.handPenalty
 
         # seven canastas
-        score += self.sevenCanastaCount * (7 * cardValues.get('7') + 1500)
+        score += self.sevenCanastaCount * (7 * CARD_VALUES.get('7') + 1500)
 
         # wild canastas
         score += 1500 * self.wildCanastaCount
-        score += self.wildCanastaJokerCount * cardValues.get('$') 
-        score += (self.wildCanastaCount * 7 - self.wildCanastaJokerCount) * cardValues.get('2') 
+        score += self.wildCanastaJokerCount * CARD_VALUES.get('$')
+        score += (self.wildCanastaCount * 7 - self.wildCanastaJokerCount) * CARD_VALUES.get('2')
 
         # clean canastas
         for cleansValue in self.cleansValues:
-            score += 7 * cardValues[cleansValue] + 500
+            score += 7 * CARD_VALUES[cleansValue] + 500
 
         # dirty canastas
         for (dirtyValue, dirtyWilds) in zip(self.dirtiesValues, self.dirtiesWilds):
-            wildFacePoints = sum([cardValues.get(x) for x in dirtyWilds])
+            wildFacePoints = sum([CARD_VALUES.get(x) for x in dirtyWilds])
             score += 300
-            score += wildFacePoints + (7-len(dirtyWilds)) * cardValues[dirtyValue]
+            score += wildFacePoints + (7-len(dirtyWilds)) * CARD_VALUES[dirtyValue]
 
         # red threes
         score += self.redThreesCount * 100
