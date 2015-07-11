@@ -30,6 +30,8 @@ class KeyboardInputSource(UserInputSource):
         return raw_input(prompt).lower()[0] == "y"
     def getInt(self, prompt):
         return int(raw_input(prompt))
+    def getArray(self, prompt):
+        return raw_input(prompt).strip().split(' ')
 
 class TeamHandState(dict):
     def __init__(self):
@@ -65,7 +67,7 @@ class TeamHandScorer(object):
         self.state['dirtiesValues'].append(self.inputSource.getString('Enter face value of dirties (X to end): '))
         while self.state['dirtiesValues'][-1] != 'X' and self.state['dirtiesValues'][-1] != '':
             if isValidCardValue(self.state['dirtiesValues'][-1]):
-                self.state['dirtiesWilds'].append(self.inputSource.getString('What wilds? ($ or 2 separated by spaces): ').strip().split(' '))
+                self.state['dirtiesWilds'].append(self.inputSource.getArray('What wilds? ($ or 2 separated by spaces): '))
                 print('New score: %d' % self.calcScore())
             else:
                 print("Invalid card: $points not in $CARD_VALUES")
