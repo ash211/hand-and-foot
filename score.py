@@ -19,13 +19,6 @@ cardValues = {
     '$': 50
     }
 
-ynBooleans = {
-    'Y': True,
-    'y': True,
-    'N': False,
-    'n': False
-    }
-
 def isValidCardValue(value):
     return value in validCardValues
 
@@ -44,12 +37,21 @@ class TeamHandScorer(object):
 
     def __init__(self, inputSource):
         self.inputSource = inputSource
+        self.wentOut = False
+        self.handPenalty = 0
+        self.sevenCanastaCount = 0
+        self.wildCanastaCount = 0
+        self.wildCanastaJokerCount = 0
+        self.cleansValues = []
+        self.dirtiesValues = []
+        self.dirtiesWilds = []
+        self.redThreesCount = 0
+        self.partialCanastasPoints = 0
 
     def addCleanCanasta(self, faceValue):
         self.score += 7 * cardValues[faceValue] + 500
 
     def addCleans(self):
-        self.cleansValues = []
         self.cleansValues.append(self.inputSource.getString('Enter face value of cleans (X to end): '))
         while self.cleansValues[-1] != 'X' and self.cleansValues[-1] != '':
             if isValidCardValue(self.cleansValues[-1]):
@@ -66,13 +68,11 @@ class TeamHandScorer(object):
         self.score += self.dirtyCanastaPoints + (7-len(wilds)) * cardValues[faceValue] + 300
 
     def addDirties(self):
-        self.dirtiesValues = []
-        self.wilds = []
         self.dirtiesValues.append(self.inputSource.getString('Enter face value of dirties (X to end): '))
         while self.dirtiesValues[-1] != 'X' and self.dirtiesValues[-1] != '':
             if isValidCardValue(self.dirtiesValues[-1]):
-                self.wilds.append(self.inputSource.getString('What wilds? ($ or 2 separated by spaces): ').strip().split(' '))
-                self.addDirtyCanasta(self.dirtiesValues[-1], self.wilds[-1])
+                self.dirtiesWilds.append(self.inputSource.getString('What wilds? ($ or 2 separated by spaces): ').strip().split(' '))
+                self.addDirtyCanasta(self.dirtiesValues[-1], self.dirtiesWilds[-1])
                 print('New score: %d' % self.score)
             else:
                 print("Invalid card: $points not in $cardValues")
@@ -101,15 +101,12 @@ class TeamHandScorer(object):
             self.wildCanastaJokerCount = self.inputSource.getInt('How many of those %d wild canastas were jokers? ' % self.wildCanastaCount)
             self.score += self.wildCanastaJokerCount * cardValues.get('$') + (self.wildCanastaCount * 7 - self.wildCanastaJokerCount) * cardValues.get('2') + 1500 * self.wildCanastaCount
             print('New score: %d' % self.score)
-        else:
-        	self.wildCanastaJokerCount = 0
 
     def addGoOutBonus(self):
         self.wentOut = self.inputSource.getBoolean('Went out? (Y/N): ')
         if self.wentOut:
             # bonus
             self.score += 250
-            self.handPenalty = 0
         else:
             self.handPenalty = self.inputSource.getInt('How many cards in your hand (count against you)? ')
             self.score -= self.handPenalty
@@ -119,6 +116,9 @@ class TeamHandScorer(object):
         self.partialCanastasPoints = self.inputSource.getInt('How many points on the board that are in partial canastas? ')
         self.score += self.partialCanastasPoints
         print('New score: %d' % self.score)
+
+    def calcScore(self):
+        pass
 
     def run(self):
         self.score = 0
@@ -140,6 +140,7 @@ class TeamHandScorer(object):
         print "wildCanastaJokerCount: %s" % self.wildCanastaJokerCount
         print "cleansValues: %s" % self.cleansValues
         print "dirtiesValues: %s" % self.dirtiesValues
+        print "dirtiesWilds: %s" % self.dirtiesWilds
         print "redThreesCount: %s" % self.redThreesCount
         print "partialCanastasPoints: %s" % self.partialCanastasPoints
 
