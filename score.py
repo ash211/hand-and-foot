@@ -20,10 +20,7 @@ CARD_VALUES = {
 def isValidCardValue(value):
     return value in CARD_VALUES
 
-class UserInputSource(object):
-    pass
-
-class KeyboardInputSource(UserInputSource):
+class ConsoleUi(object):
     def getString(self, prompt):
         return raw_input(prompt)
     def getBoolean(self, prompt):
@@ -32,6 +29,8 @@ class KeyboardInputSource(UserInputSource):
         return int(raw_input(prompt))
     def getArray(self, prompt):
         return raw_input(prompt).strip().split(' ')
+    def show(self, s):
+        print(s)
 
 class TeamHandState(dict):
     def __init__(self):
@@ -82,57 +81,57 @@ def scoreState(state):
 
 class TeamHandInterrogator(object):
 
-    def __init__(self, inputSource):
-        self.inputSource = inputSource
+    def __init__(self, ui):
+        self.ui = ui
         self.state = TeamHandState()
 
     def addCleans(self):
-        self.state['cleansValues'].append(self.inputSource.getString('Enter face value of cleans (X to end): '))
+        self.state['cleansValues'].append(self.ui.getString('Enter face value of cleans (X to end): '))
         while self.state['cleansValues'][-1] != 'X' and self.state['cleansValues'][-1] != '':
             if isValidCardValue(self.state['cleansValues'][-1]):
-                print('New score: %d' % scoreState(self.state))
+                self.ui.show('New score: %d' % scoreState(self.state))
             else:
-                print("Invalid card: $points not in $CARD_VALUES")
+                self.ui.show("Invalid card: $points not in $CARD_VALUES")
                 self.state['cleansValues'].pop()
-            self.state['cleansValues'].append(self.inputSource.getString('Enter face value of cleans (X to end): '))
+            self.state['cleansValues'].append(self.ui.getString('Enter face value of cleans (X to end): '))
         self.state['cleansValues'].pop()
 
     def addDirties(self):
-        self.state['dirtiesValues'].append(self.inputSource.getString('Enter face value of dirties (X to end): '))
+        self.state['dirtiesValues'].append(self.ui.getString('Enter face value of dirties (X to end): '))
         while self.state['dirtiesValues'][-1] != 'X' and self.state['dirtiesValues'][-1] != '':
             if isValidCardValue(self.state['dirtiesValues'][-1]):
-                self.state['dirtiesWilds'].append(self.inputSource.getArray('What wilds? ($ or 2 separated by spaces): '))
-                print('New score: %d' % scoreState(self.state))
+                self.state['dirtiesWilds'].append(self.ui.getArray('What wilds? ($ or 2 separated by spaces): '))
+                self.ui.show('New score: %d' % scoreState(self.state))
             else:
-                print("Invalid card: $points not in $CARD_VALUES")
+                self.ui.show("Invalid card: $points not in $CARD_VALUES")
                 self.state['dirtiesValues'].pop()
-            self.state['dirtiesValues'].append(self.inputSource.getString('Enter face value of dirties (X to end): '))
+            self.state['dirtiesValues'].append(self.ui.getString('Enter face value of dirties (X to end): '))
         self.state['dirtiesValues'].pop()
 
     def addRedThrees(self):
-        self.state['redThreesCount'] = self.inputSource.getInt('How many red threes? ')
-        print('New score: %d' % scoreState(self.state))
+        self.state['redThreesCount'] = self.ui.getInt('How many red threes? ')
+        self.ui.show('New score: %d' % scoreState(self.state))
 
     def addSevens(self):
-        self.state['sevenCanastaCount'] = self.inputSource.getInt('How many 7 canastas did you have? ')
+        self.state['sevenCanastaCount'] = self.ui.getInt('How many 7 canastas did you have? ')
         if self.state['sevenCanastaCount']:
-            print('New score: %d' % scoreState(self.state))
+            self.ui.show('New score: %d' % scoreState(self.state))
 
     def addWilds(self):
-        self.state['wildCanastaCount'] = self.inputSource.getInt('How many wild canastas did you have? ')
+        self.state['wildCanastaCount'] = self.ui.getInt('How many wild canastas did you have? ')
         if self.state['wildCanastaCount']:
-            self.state['wildCanastaJokerCount'] = self.inputSource.getInt('How many of those %d wild canastas were jokers? ' % self.state['wildCanastaCount'])
-            print('New score: %d' % scoreState(self.state))
+            self.state['wildCanastaJokerCount'] = self.ui.getInt('How many of those %d wild canastas were jokers? ' % self.state['wildCanastaCount'])
+            self.ui.show('New score: %d' % scoreState(self.state))
 
     def addGoOutBonus(self):
-        self.state['wentOut'] = self.inputSource.getBoolean('Went out? (Y/N): ')
+        self.state['wentOut'] = self.ui.getBoolean('Went out? (Y/N): ')
         if not self.state['wentOut']:
-            self.state['handPenalty'] = self.inputSource.getInt('How many cards in your hand (count against you)? ')
-            print('New score: %d' % scoreState(self.state))
+            self.state['handPenalty'] = self.ui.getInt('How many cards in your hand (count against you)? ')
+            self.ui.show('New score: %d' % scoreState(self.state))
 
     def addPartialCanastas(self):
-        self.state['partialCanastasPoints'] = self.inputSource.getInt('How many points on the board that are in partial canastas? ')
-        print('New score: %d' % scoreState(self.state))
+        self.state['partialCanastasPoints'] = self.ui.getInt('How many points on the board that are in partial canastas? ')
+        self.ui.show('New score: %d' % scoreState(self.state))
 
     def run(self):
         self.addGoOutBonus()
@@ -144,6 +143,6 @@ class TeamHandInterrogator(object):
         self.addPartialCanastas()
 
 if __name__ == '__main__':
-    interrogator = TeamHandInterrogator(KeyboardInputSource())
+    interrogator = TeamHandInterrogator(ConsoleUi())
     interrogator.run()
     print('Final score: %d' % scoreState(interrogator.state))
