@@ -113,10 +113,6 @@ class TeamHandInterrogator(object):
         self.state['redThreesCount'] = self.inputSource.getInt('How many red threes? ')
         print('New score: %d' % scoreState(self.state))
 
-    def addSpecials(self):
-        self.addSevens()
-        self.addWilds()
-
     def addSevens(self):
         self.state['sevenCanastaCount'] = self.inputSource.getInt('How many 7 canastas did you have? ')
         if self.state['sevenCanastaCount']:
@@ -140,7 +136,8 @@ class TeamHandInterrogator(object):
 
     def run(self):
         self.addGoOutBonus()
-        self.addSpecials()
+        self.addSevens()
+        self.addWilds()
         self.addCleans()
         self.addDirties()
         self.addRedThrees()
