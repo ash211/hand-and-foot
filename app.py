@@ -1,10 +1,11 @@
 import os
 
-from flask import Flask, render_template, redirect, request, url_for
+from flask import Flask, flash, render_template, redirect, request, url_for
 from flask.ext.heroku import Heroku
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap
 
+from score import scoreState
 
 app = Flask(__name__)
 app.secret_key = 's3cr3t'
@@ -18,7 +19,12 @@ from models import *
 def main():
     form = RoundForm(request.form)
     if form.validate_on_submit():
-        return redirect('/')
+        r = Round()
+        form.populate_obj(r)
+        score = r.score()
+        return redirect('/?score=%d' % score)
+    if request.args.get('score'):
+        flash("Score: %d" % int(request.args.get('score')))
     return render_template('index.html', form=form)
 
 @app.route('/submitRound')

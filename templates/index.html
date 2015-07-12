@@ -1,5 +1,6 @@
 {% extends "bootstrap/base.html" %}
 {% import "bootstrap/fixes.html" as fixes %}
+{% import "bootstrap/utils.html" as util %}
 
 {% block title %}Brentwood Hand and Foot{% endblock %}
 
@@ -66,10 +67,22 @@
 {% endblock %}
 
 {% block content %}
+{{util.flashed_messages()}}
 <div class="container">
 <form method="POST" action="/">
     {{ form.csrf_token }}
     <div>{{ form.wentOut.label }}: {{ form.wentOut }}</div>
+
+    <div>{{ form.handPenalty.label }}: {{ form.handPenalty }}</div>
+    <div>{{ form.sevenCanastaCount.label }}: {{ form.sevenCanastaCount }}</div>
+    <div>{{ form.wildCanastaCount.label }}: {{ form.wildCanastaCount }}</div>
+    <div>{{ form.wildCanastaJokerCount.label }}: {{ form.wildCanastaJokerCount }}</div>
+    <div>{{ form.cleansValues.label }}: {{ form.cleansValues }}</div>
+    <div>{{ form.dirtiesValues.label }}: {{ form.dirtiesValues }}</div>
+    <div>{{ form.dirtiesWilds.label }}: {{ form.dirtiesWilds }}</div>
+    <div>{{ form.redThreesCount.label }}: {{ form.redThreesCount }}</div>
+    <div>{{ form.partialCanastasPoints.label }}: {{ form.partialCanastasPoints }}</div>
+
     <div>{{ form.submit }}</div>
 </form>
 
