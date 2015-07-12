@@ -73,7 +73,7 @@
     {{ form.csrf_token }}
     <div>{{ form.wentOut.label }}: {{ form.wentOut }}</div>
 
-    <div>{{ form.handPenalty.label }}: {{ form.handPenalty }}</div>
+    <div>{{ form.handPenalty.label }}: {{ form.handPenalty(step=5) }}</div>
     <div>{{ form.sevenCanastaCount.label }}: {{ form.sevenCanastaCount }}</div>
     <div>{{ form.wildCanastaCount.label }}: {{ form.wildCanastaCount }}</div>
     <div>{{ form.wildCanastaJokerCount.label }}: {{ form.wildCanastaJokerCount }}</div>
@@ -81,7 +81,7 @@
     <div>{{ form.dirtiesValues.label }}: {{ form.dirtiesValues }}</div>
     <div>{{ form.dirtiesWilds.label }}: {{ form.dirtiesWilds }}</div>
     <div>{{ form.redThreesCount.label }}: {{ form.redThreesCount }}</div>
-    <div>{{ form.partialCanastasPoints.label }}: {{ form.partialCanastasPoints }}</div>
+    <div>{{ form.partialCanastasPoints.label }}: {{ form.partialCanastasPoints(step=5) }}</div>
 
     <div>{{ form.submit }}</div>
 </form>
