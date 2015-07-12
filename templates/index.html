@@ -67,7 +67,12 @@
 
 {% block content %}
 <div class="container">
-<h1>Brentwood Hand and Foot</h1>
+<form method="POST" action="/">
+    {{ form.csrf_token }}
+    <div>{{ form.wentOut.label }}: {{ form.wentOut }}</div>
+    <div>{{ form.submit }}</div>
+</form>
+
 </div>
 {% endblock %}
 
