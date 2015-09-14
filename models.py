@@ -32,7 +32,7 @@ class Round(Base):
     sevenCanastaCount = db.Column(db.Integer, info={'label': 'How many complete canastas of sevens?'})
     wildCanastaCount = db.Column(db.Integer, info={'label': 'How many complete canastas of wilds?'})
     wildCanastaJokerCount = db.Column(db.Integer, info={'label': 'How many jokers in those complete canastas of wilds?'})
-    cleansValues = db.Column(db.Integer, info={'label': 'What were your clean books?'}) # array[String]
+    cleansValues = db.Column(db.String, info={'label': 'What were your clean books?'}) # array[String]
     dirtiesValues = db.Column(db.Integer, info={'label': 'What were your dirty books?'}) # array[String]
     dirtiesWilds = db.Column(db.Integer, info={'label': 'What were the wilds in your dirties?'}) # array[array[String]]
     redThreesCount = db.Column(db.Integer, info={'label': 'How many red threes?'})

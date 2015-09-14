@@ -30,11 +30,8 @@ def submitRound():
         #print('Form was valid')
         r = Round()
         form.populate_obj(r)
-        try:
-            score = r.score()
-            return jsonify({"score": score})
-        except Exception as e:
-            return "Invalid: %s" % e
+        score = r.score()
+        return jsonify({"score": score})
     else:
         return "invalid"
 
