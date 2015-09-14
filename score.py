@@ -50,6 +50,8 @@ def scoreState(state):
 
     if state['wentOut']:
         score += 250
+        if state['handPenalty']:
+            raise Exception("Shouldn't have hand penalty when you went out")
     else:
         score -= state['handPenalty']
 
