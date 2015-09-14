@@ -69,7 +69,7 @@
 {% block content %}
 {{util.flashed_messages()}}
 <div class="container">
-<form method="POST" action="/submitRound">
+<form method="POST" action="/api/score-round">
     {{ form.csrf_token }}
     <div>{{ form.team.label }} {{ form.team }}</div>
     <div>{{ form.wentOut.label }} {{ form.wentOut }}</div>

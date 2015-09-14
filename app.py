@@ -19,7 +19,7 @@ from models import *
 def main():
     return render_template('index.html', form=RoundForm())
 
-@app.route('/submitRound', methods=('POST', ))
+@app.route('/api/score-round', methods=('POST', ))
 def submitRound():
     form = RoundForm(request.form)
     #print("request.form: ", request.form)
