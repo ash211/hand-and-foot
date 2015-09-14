@@ -10,3 +10,7 @@ To setup:
 To run:
 - . venv/bin/activate
 - foreman run web
+
+To debug:
+- . venv/bin/activate
+- python app.py
